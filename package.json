@@ -1,0 +1,13 @@
+{
+  "name": "autocomplete",
+  "version": "0.0.1",
+  "description": "Autocomplete for remote data",
+  "repository": "danqing/autocomplete",
+  "author": "Danqing Liu",
+  "license": "MIT",
+  "engines": {
+    "node": "5.3.x"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
