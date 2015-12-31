@@ -3,35 +3,35 @@
 <head>
   <link rel='stylesheet' href='style.css'>
   <link rel='stylesheet' href='ac.css'>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBAg4GcC7Wbi8HPsu903i-5jp4DAvH5b4&libraries=places"></script>
 </head>
 <body>
   <div class='banner'>
     <a href='https://github.com/danqing/autocomplete'>← Back to repo</a>
+    <span id='maps'></span>
   </div>
   <div class='wrapper'>
     <div class='input-wrapper'>
       <h1>Location Search</h1>
       <input id='input' type='text' placeholder="Enter a location"></input>
-      <p id='output'>Search for a location above.</p>
+      <p id='output'>Powered by Google Maps API.</p>
     </div>
   </div>
   <script type="text/javascript" src="ac.js"></script>
   <script>
-    var urlFn = function(query) {
-      var q = {
-        'key': 'AIzaSyDBAg4GcC7Wbi8HPsu903i-5jp4DAvH5b4',
-        'input': query
-      };
-      var url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?';
-      return url + AC.encodeQuery(q);
-    };
+    var service = new google.maps.places.PlacesService(
+        document.getElementById('maps'));
 
-    var resultFn = function(response) {
-      response = JSON.parse(response);
-      if (response.status !== 'OK') {
-        return [];
-      }
-      return response.predictions;
+    var requestFn = function(query) {
+      var callback = function(results, status) {
+        if (status != google.maps.places.PlacesServiceStatus.OK) {
+          ac.results = [];
+        } else {
+          ac.results = results;
+        }
+        ac.render();
+      };
+      service.textSearch({query: query}, callback);
     };
 
     var triggerFn = function(obj) {
@@ -40,9 +40,9 @@
     };
 
     var input = document.getElementById('input');
-    var ac = new AC(input, urlFn, resultFn, null, triggerFn);
-    ac.primaryTextKey = 'description';
-    ac.secondaryTextKey = 'place_id';
+    var ac = new AC(input, null, requestFn, null, null, triggerFn);
+    ac.primaryTextKey = 'name';
+    ac.secondaryTextKey = 'formatted_address';
   </script>
 </body>
 </html>

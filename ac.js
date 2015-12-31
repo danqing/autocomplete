@@ -2,9 +2,15 @@
  * The autocomplete widget.
  *
  * @param {Element} inputEl The input element.
- * @param {Function} urlBuilderFn The required function to return the URL for
+ * @param {Function} urlFn The optional function to return the URL for
  *     retrieving autocomplete results. It takes a single argument, the user
- *     input, and returns a string that can be used to make XHR request.
+ *     input, and returns a string that can be used to make XHR request. If the
+ *     request function is not specified, this function must be provided.
+ * @param {Function} requestFn The optional request function that allows full
+ *     customization of the behavior when the user types something. It takes a
+ *     single argument, the user input, and should write the results into
+ *     `this.results` and then call `this.render()` to display the results. If
+ *     this function is specified, both urlFn and resultFn are ignored.
  * @param {Function} resultFn The optional function to post-process the
  *     received autocomplete results before displaying them with this widget.
  *     It takes a single argument, the received string response, and returns
@@ -18,7 +24,7 @@
  *     autocomplete result is selected.
  * @constructor
  */
-var AC = function init(inputEl, urlBuilderFn, resultFn, rowFn, triggerFn) {
+var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn) {
   /** @type {Element} The input element to attach to. */
   this.inputEl = inputEl;
 
@@ -29,10 +35,13 @@ var AC = function init(inputEl, urlBuilderFn, resultFn, rowFn, triggerFn) {
   this.resultFn = resultFn;
 
   /** @type {Function} */
+  this.requestFn = requestFn;
+
+  /** @type {Function} */
   this.rowFn = rowFn;
 
   /** @type {Function} */
-  this.urlBuilderFn = urlBuilderFn;
+  this.urlBuilderFn = urlFn;
 
   /** @type {string} The user input value. */
   this.value = '';
@@ -349,6 +358,11 @@ AC.prototype.trigger = function trigger() {
  * will be updated. Otherwise the UI will be left unmodified.
  */
 AC.prototype.requestMatch = function request() {
+  if (this.requestFn) {
+    this.requestFn(this.value);
+    return;
+  }
+
   this.abortPendingRequest();
 
   if (!this.value) {
