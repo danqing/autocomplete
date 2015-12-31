@@ -11,16 +11,24 @@
  * @param {Function} urlBuilderFn The required function to return the URL for
  *     retrieving autocomplete results. It takes a single argument, the user
  *     input, and returns a string that can be used to make XHR request.
+ * @param {Function} resultFn The optional function to post-process the
+ *     received autocomplete results before displaying them with this widget.
+ *     It takes a single argument, the received string response, and returns
+ *     an array of autocomplete candidates. If this function is not provided,
+ *     the widget will attempt to parse the response as a JSON array.
  * @param {Function} triggerFn The optional function called when an
  *     autocomplete result is selected.
  * @constructor
  */
-var AC = function init(inputEl, urlBuilderFn, triggerFn) {
+var AC = function init(inputEl, urlBuilderFn, resultFn, triggerFn) {
   /** @type {Element} The input element to attach to. */
   this.inputEl = inputEl;
 
   /** @type {Function} */
   this.triggerFn = triggerFn;
+
+  /** @type {Function} */
+  this.resultFn = resultFn;
 
   /** @type {Function} */
   this.urlBuilderFn = urlBuilderFn;
@@ -51,6 +59,12 @@ var AC = function init(inputEl, urlBuilderFn, triggerFn) {
 
   /** @type {number} The index currently selected. -1 if nothing selected. */
   this.selectedIndex = -1;
+
+  /** @type {string} The key of the primary text in an autocomplete result. */
+  this.primaryTextKey = 'title';
+
+  /** @type {string} The key of the secondary text in an autocomplete result. */
+  this.secondaryTextKey = 'subtitle';
 
   /**
    * @type {boolean}
@@ -346,10 +360,17 @@ AC.prototype.requestMatch = function request() {
   ajax.open('GET', this.urlBuilderFn(this.value), true);
 
   ajax.onload = function onload() {
-    if (ajax.status === 200) {
-      this.results = JSON.parse(ajax.responseText) || [];
-      this.render();
+    if (ajax.status !== 200) {
+      return;
     }
+
+    if (this.resultFn) {
+      this.results = this.resultFn(ajax.responseText);
+    } else {
+      this.results = JSON.parse(ajax.responseText) || [];
+    }
+
+    this.render();
   }.bind(this);
 
   ajax.send();
@@ -406,15 +427,14 @@ AC.prototype.createRow = function create(i) {
   var el = AC.createEl('div', AC.CLASS.ROW);
   el.setAttribute('data-rid', i);
 
-  el.appendChild(AC.createEl('i', 'icon icon_place'));
-
   var primary = AC.createEl('span', AC.CLASS.PRIMARY_SPAN);
-  primary.appendChild(AC.createMatchTextEls(this.value, data.title));
+  primary.appendChild(AC.createMatchTextEls(this.value,
+      data[this.primaryTextKey]));
   el.appendChild(primary);
 
-  if (data.subtitle) {
+  if (data[this.secondaryTextKey]) {
     el.appendChild(AC.createEl('span',
-        AC.CLASS.SECONDARY_SPAN, data.subtitle));
+        AC.CLASS.SECONDARY_SPAN, data[this.secondaryTextKey]));
   }
 
   return el;
