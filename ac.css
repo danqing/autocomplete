@@ -28,13 +28,8 @@
   border-bottom: none;
 }
 
-.tac-row .icon, .tac-pr, .tac-sc {
+.tac-pr, .tac-sc {
   vertical-align: baseline;
-}
-
-.icon {
-  font-size: 16px;
-  color: #9d9da3;
 }
 
 .tac-pr {
