@@ -16,11 +16,15 @@
  *     It takes a single argument, the received string response, and returns
  *     an array of autocomplete candidates. If this function is not provided,
  *     the widget will attempt to parse the response as a JSON array.
+ * @param {Function} rowFn The optional function to render a row. It takes a
+ *     single argument, the full row data object, and returns a DOM element
+ *     representing the row. If this function is not provided, the widget will
+ *     render the rows with the default `createRow` function.
  * @param {Function} triggerFn The optional function called when an
  *     autocomplete result is selected.
  * @constructor
  */
-var AC = function init(inputEl, urlBuilderFn, resultFn, triggerFn) {
+var AC = function init(inputEl, urlBuilderFn, resultFn, rowFn, triggerFn) {
   /** @type {Element} The input element to attach to. */
   this.inputEl = inputEl;
 
@@ -29,6 +33,9 @@ var AC = function init(inputEl, urlBuilderFn, resultFn, triggerFn) {
 
   /** @type {Function} */
   this.resultFn = resultFn;
+
+  /** @type {Function} */
+  this.rowFn = rowFn;
 
   /** @type {Function} */
   this.urlBuilderFn = urlBuilderFn;
@@ -402,7 +409,14 @@ AC.prototype.render = function render() {
   if (this.results.length) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < this.results.length; i++) {
-      var row = this.createRow(i);
+      var row = null;
+      if (this.rowFn) {
+        row = this.rowFn(this.results[i]);
+        row.className += ' ' + AC.CLASS.ROW;
+      } else {
+        row = this.createRow(i);
+      }
+      row.setAttribute('data-rid', i);
       fragment.appendChild(row);
       this.rows.push(row);
     }
@@ -425,7 +439,6 @@ AC.prototype.render = function render() {
 AC.prototype.createRow = function create(i) {
   var data = this.results[i];
   var el = AC.createEl('div', AC.CLASS.ROW);
-  el.setAttribute('data-rid', i);
 
   var primary = AC.createEl('span', AC.CLASS.PRIMARY_SPAN);
   primary.appendChild(AC.createMatchTextEls(this.value,
