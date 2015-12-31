@@ -23,11 +23,17 @@
         document.getElementById('maps'));
 
     var requestFn = function(query) {
+      if (!query) {
+        ac.results = [];
+        ac.render();
+        return;
+      }
+
       var callback = function(results, status) {
         if (status != google.maps.places.PlacesServiceStatus.OK) {
           ac.results = [];
         } else {
-          ac.results = results;
+          ac.results = results.length > 5 : results.slice(0, 5) : results;
         }
         ac.render();
       };

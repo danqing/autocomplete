@@ -344,7 +344,7 @@ AC.prototype.click = function click(e) {
  * calls the provided trigger function, and unmounts the autocomplete.
  */
 AC.prototype.trigger = function trigger() {
-  this.value = this.results[this.selectedIndex].title;
+  this.value = this.results[this.selectedIndex][this.primaryTextKey];
   this.inputEl.value = this.value;
   if (this.triggerFn) {
     this.triggerFn(this.results[this.selectedIndex]);
