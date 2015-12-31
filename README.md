@@ -7,6 +7,8 @@ This is a light-weight JavaScript widget that provides autocomplete for user inp
 * Customizable to support different data format.
 * No dependencies and small in size.
 
+Demo: http://danqing.github.io/autocomplete/
+
 ## Install
 
 Get it from npm, or simply download the `ac.js` file and put it into your project.
@@ -30,6 +32,72 @@ where:
 * `resultFn` is the function that processes the returned results, in case you have some custom format. It takes the raw HTTP response, and returns a list of autocomplete results. If the response is already a list of results, you do not need to specify this function.
 * `rowFn` is the function that takes the data of a row to render the row in the DOM. If it is not provided, autocomplete will generate the rows automatically.
 * `triggerFn` is the function called when the user clicks on an autocomplete row. The result associated with the row will be passed in as the parameter.
+
+Example (find it in the gh-pages branch):
+
+```js
+var service = new google.maps.places.PlacesService(...);
+
+// Custom request function.
+var requestFn = function(query) {
+  if (!query) {
+    ac.results = [];
+    ac.render();
+    return;
+  }
+
+  var callback = function(results, status) {
+    if (status != google.maps.places.PlacesServiceStatus.OK) {
+      ac.results = [];
+    } else {
+      ac.results = results;
+    }
+    ac.render();
+  };
+  service.textSearch({query: query}, callback);
+};
+
+var triggerFn = function(obj) {
+  var output = document.getElementById('output');
+  output.textContent = 'You selected ' + obj.name;
+};
+
+var input = document.getElementById('input');
+var ac = new AC(input, null, requestFn, null, null, triggerFn);
+// This is the key to get the primary text from.
+ac.primaryTextKey = 'name';
+// This is the key to get the secondary text from. If the key does not exist,
+// it will be ignored.
+ac.secondaryTextKey = 'formatted_address';
+```
+
+## Utilities
+
+The autocomplete library comes with two utility functions that you may find useful:
+
+```js
+/**
+ * Turns a query dictionary into a HTML-escaped query string.
+ *
+ * @param {Object} obj The query dict such as {a: 'b', c: 'd'}.
+ * @return {string} The encoded query string such as a=b&c=d.
+ */
+AC.encodeQuery = function encode(obj);
+
+/**
+ * Creates DOM elements for autocomplete result input highlighting. With the
+ * whitespaces in the input trimmed, the input will be in bold (b) whereas
+ * everything else will be left intact (span).
+ *
+ * @param {string} input The user input string.
+ * @param {string} complete The autocompleted string.
+ * @return {Fragment} The document fragment that contains the created DOM
+ *     elements.
+ */
+AC.createMatchTextEls = function match(input, complete);
+```
+
+The first function may be useful when you construct your URL in the `urlFn`. The second function may be useful if you have custom rendering logic but still want the keyword highlight.
 
 ## License
 
