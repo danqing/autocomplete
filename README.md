@@ -19,13 +19,14 @@ npm install remote-ac --save
 
 ```js
 var AC = require('remote-ac');
-var ac = new AC(input, urlBuilderFn, resultFn, rowFn, triggerFn);
+var ac = new AC(input, urlFn, requestFn, resultFn, rowFn, triggerFn);
 ```
 
 where:
 
 * `input` is the text field that holds the user input to autocomplete.
-* `urlBuilderFn` is the function that takes the user input string and returns the URL to retrieve the autocomplete results. It is assumed that it is a GET request.
+* `urlFn` is the function that takes the user input string and returns the URL to retrieve the autocomplete results. It is assumed that it is a GET request.
+* `requestFn` is the function that allows full customization of a request behavior. It takes the user input string and should update `this.results` with the desired result and call `this.render()` to update the autocomplete. If this function is provided, both `urlFn` and `resultFn` will be ignored.
 * `resultFn` is the function that processes the returned results, in case you have some custom format. It takes the raw HTTP response, and returns a list of autocomplete results. If the response is already a list of results, you do not need to specify this function.
 * `rowFn` is the function that takes the data of a row to render the row in the DOM. If it is not provided, autocomplete will generate the rows automatically.
 * `triggerFn` is the function called when the user clicks on an autocomplete row. The result associated with the row will be passed in as the parameter.
