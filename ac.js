@@ -527,4 +527,20 @@ AC.findPosition = function position(el) {
   return {left: left, top: top};
 };
 
+/**
+ * Turns a query dictionary into a HTML-escaped query string.
+ *
+ * @param {Object} obj The query dict such as {a: 'b', c: 'd'}.
+ * @return {string} The encoded query string such as a=b&c=d.
+ */
+AC.encodeQuery = function encode(obj) {
+  var str = [];
+  for (var p in obj) {
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+    }
+  }
+  return str.join('&');
+};
+
 module.exports = AC;
