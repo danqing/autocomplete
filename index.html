@@ -12,12 +12,37 @@
     <div class='input-wrapper'>
       <h1>Location Search</h1>
       <input id='input' type='text' placeholder="Enter a location"></input>
+      <p id='output'>Search for a location above.</p>
     </div>
   </div>
   <script type="text/javascript" src="ac.js"></script>
   <script>
+    var urlFn = function(query) {
+      var q = {
+        'key': 'AIzaSyDBAg4GcC7Wbi8HPsu903i-5jp4DAvH5b4',
+        'input': query
+      };
+      var url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?';
+      return url + AC.encodeQuery(q);
+    };
+
+    var resultFn = function(response) {
+      response = JSON.parse(response);
+      if (response.status !== 'OK') {
+        return [];
+      }
+      return response.predictions;
+    };
+
+    var triggerFn = function(obj) {
+      var output = document.getElementById('output');
+      output.textContent = 'You selected ' + obj.description;
+    };
+
     var input = document.getElementById('input');
-    var ac = new AC(input);
+    var ac = new AC(input, urlFn, resultFn, null, triggerFn);
+    ac.primaryTextKey = 'description';
+    ac.secondaryTextKey = 'place_id';
   </script>
 </body>
 </html>
