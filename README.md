@@ -1,4 +1,4 @@
-# Autocomplete
+# Autocomplete [![npm version](https://badge.fury.io/js/remote-ac.svg)](http://badge.fury.io/js/remote-ac)
 
 This is a light-weight JavaScript widget that provides autocomplete for user inputs that gets its data from remote sources. It has the following nice features:
 
@@ -69,6 +69,25 @@ ac.primaryTextKey = 'name';
 // This is the key to get the secondary text from. If the key does not exist,
 // it will be ignored.
 ac.secondaryTextKey = 'formatted_address';
+```
+
+## Styles
+
+The library comes with a [default style](https://github.com/danqing/autocomplete/blob/gh-pages/ac.css) that you can use as a starting point.
+
+The following CSS classes are applied to the autocomplete DOM elements if you are using the default rendering system:
+
+```js
+AC.CLASS = {
+  WRAPPER: 'ac-wrap',
+  ROW_WRAPPER: 'ac-rwrap',
+  ROW: 'ac-row',
+  SELECTED_ROW: 'ac-row selected',
+  PRIMARY_SPAN: 'ac-pr',
+  SECONDARY_SPAN: 'ac-sc',
+  MOBILE_INPUT: 'ac-minput',
+  CANCEL: 'ac-cancel'
+};
 ```
 
 ## Utilities

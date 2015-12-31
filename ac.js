@@ -176,6 +176,7 @@ AC.prototype.mount = function mount() {
 
   if (!this.el) {
     this.el = AC.createEl('div', AC.CLASS.WRAPPER);
+    this.el.style.position = 'absolute';
     document.body.appendChild(this.el);
   } else {
     this.el.style.display = '';

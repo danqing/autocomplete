@@ -1,6 +1,6 @@
 {
   "name": "remote-ac",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Autocomplete for remote data",
   "repository": "danqing/autocomplete",
   "author": "Danqing Liu",
