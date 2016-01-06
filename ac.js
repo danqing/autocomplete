@@ -353,6 +353,7 @@ AC.prototype.click = function click(e) {
 AC.prototype.trigger = function trigger() {
   this.value = this.results[this.selectedIndex][this.primaryTextKey];
   this.inputEl.value = this.value;
+  this.inputEl.blur();
   if (this.triggerFn) {
     this.triggerFn(this.results[this.selectedIndex]);
   }
