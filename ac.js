@@ -303,7 +303,7 @@ AC.prototype.setSelectedIndex = function select(i) {
   this.selectedIndex = i;
 
   if (this.isRightArrowComplete) {
-    this.inputEl.value = this.results[this.selectedIndex].title;
+    this.inputEl.value = this.results[this.selectedIndex][this.primaryTextKey];
   }
 };
 
