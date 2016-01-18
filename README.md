@@ -33,7 +33,27 @@ where:
 * `rowFn` is the function that takes the data of a row to render the row in the DOM. If it is not provided, autocomplete will generate the rows automatically.
 * `triggerFn` is the function called when the user clicks on an autocomplete row. The result associated with the row will be passed in as the parameter.
 
-Example (find it in the gh-pages branch):
+If you would like to use the default row rendering function, you can have a primary text label and an optional secondary text label. The default keys to them are `title` and `subtitle`, i.e.:
+
+```js
+[{
+  'title': 'Some Title Label',
+  'subtitle': 'Some Subtitle Label',
+  'other_key': '...'
+}, {
+  ...
+}]
+```
+
+If your payload has some other keys, you can change the label keys with the following:
+
+```js
+var ac = new AC(...);
+ac.primaryTextKey = 'your_key';
+ac.secondaryTextKey = 'your_secondary_key';
+```
+
+Full example (find it in the gh-pages branch):
 
 ```js
 var service = new google.maps.places.PlacesService(...);
