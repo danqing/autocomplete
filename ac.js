@@ -328,7 +328,7 @@ AC.prototype.click = function click(e) {
       return;
     }
 
-    if (parent.className === AC.CLASS.ROW) {
+    if (parent.className.match(AC.CLASS.ROW)) {
       var id = parseInt(parent.getAttribute('data-rid'), 10);
       if (!isNaN(id)) {
         rowid = id;
