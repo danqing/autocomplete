@@ -93,7 +93,7 @@ ac.secondaryTextKey = 'formatted_address';
 
 ## Styles
 
-The library comes with a [default style](https://github.com/danqing/autocomplete/blob/gh-pages/ac.css) that you can use as a starting point. You can copy it over to your project so the autocomplete is working, and then modify it to meet your UI requirements.
+The library comes with a [default style](https://github.com/danqing/autocomplete/blob/master/ac.css) for your reference. Start with it so the autocomplete is working, and then modify it to meet your UI requirements.
 
 The following CSS classes are applied to the autocomplete DOM elements if you are using the default rendering system:
 
