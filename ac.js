@@ -22,11 +22,17 @@
  *     render the rows with the default `createRow` function.
  * @param {Function} triggerFn The optional function called when an
  *     autocomplete result is selected.
+ * @param {Element} anchorEl The optional DOM element to attach the autocomplete
+ *     to. If not provided, the autocomplete is attached to the input element.
  * @constructor
  */
-var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn) {
+var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
+    anchorEl) {
   /** @type {Element} The input element to attach to. */
   this.inputEl = inputEl;
+
+  /** @type {Element} The element to position the autocomplete below. */
+  this.anchorEl = anchorEl || inputEl;
 
   /** @type {Function} */
   this.triggerFn = triggerFn;
@@ -154,12 +160,6 @@ AC.CLASS = {
 /** Activates the autocomplete for mounting on input focus. */
 AC.prototype.activate = function activate() {
   this.inputEl.addEventListener('focus', this.mount.bind(this));
-  // var blur = function blur() {
-  //   setTimeout(function b() {
-  //     this.unmount();
-  //   }.bind(this), 50);
-  // };
-  // this.inputEl.addEventListener('blur', blur.bind(this));
 };
 
 /** Mounts the autocomplete. */
@@ -170,6 +170,7 @@ AC.prototype.mount = function mount() {
 
   if (!this.el) {
     this.el = AC.createEl('div', AC.CLASS.WRAPPER);
+    this.el.style.position = 'absolute';
     document.body.appendChild(this.el);
   } else {
     this.el.style.display = '';
@@ -209,8 +210,8 @@ AC.prototype.unmount = function unmount() {
 
 /** Positions the autocomplete to be right beneath the input. */
 AC.prototype.position = function position() {
-  var rect = this.inputEl.getBoundingClientRect();
-  var offset = AC.findPosition(this.inputEl);
+  var rect = this.anchorEl.getBoundingClientRect();
+  var offset = AC.findPosition(this.anchorEl);
   this.el.style.top = offset.top + rect.height + 'px';
   this.el.style.left = offset.left + 'px';
   this.el.style.width = rect.width + 'px';
@@ -237,7 +238,8 @@ AC.prototype.keydown = function keydown(e) {
       break;
     case AC.KEYCODE.RIGHT:
       if (this.selectedIndex > -1) {
-        this.inputEl.value = this.results[this.selectedIndex][this.primaryTextKey];
+        this.inputEl.value =
+            this.results[this.selectedIndex][this.primaryTextKey];
         this.isRightArrowComplete = true;
       }
       break;
@@ -320,7 +322,7 @@ AC.prototype.click = function click(e) {
       return;
     }
 
-    if (parent.className === AC.CLASS.ROW) {
+    if (parent.className.match(AC.CLASS.ROW)) {
       var id = parseInt(parent.getAttribute('data-rid'), 10);
       if (!isNaN(id)) {
         rowid = id;
