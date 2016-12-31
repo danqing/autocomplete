@@ -21,7 +21,7 @@ npm install remote-ac --save
 
 ```js
 var AC = require('remote-ac');
-var ac = new AC(input, urlFn, requestFn, resultFn, rowFn, triggerFn);
+var ac = new AC(input, urlFn, requestFn, resultFn, rowFn, triggerFn, anchorEl);
 ```
 
 where:
@@ -32,6 +32,7 @@ where:
 * `resultFn` is the function that processes the returned results, in case you have some custom format. It takes the raw HTTP response, and returns a list of autocomplete results. If the response is already a list of results, you do not need to specify this function.
 * `rowFn` is the function that takes the data of a row to render the row in the DOM. If it is not provided, autocomplete will generate the rows automatically.
 * `triggerFn` is the function called when the user clicks on an autocomplete row. The result associated with the row will be passed in as the parameter.
+* `anchorEl` is the element to position the autocomplete against, in case you don't want it to be positioned below the input element.
 
 If you would like to use the default row rendering function, you can have a primary text label and an optional secondary text label. The default keys to them are `title` and `subtitle`, i.e.:
 
@@ -61,20 +62,18 @@ var service = new google.maps.places.PlacesService(...);
 // Custom request function.
 var requestFn = function(query) {
   if (!query) {
-    ac.results = [];
-    ac.render();
+    this.results = [];
+    this.render();
     return;
   }
 
-  var callback = function(results, status) {
-    if (status != google.maps.places.PlacesServiceStatus.OK) {
-      ac.results = [];
-    } else {
-      ac.results = results;
+  service.textSearch({query: query}, (results, status) => {
+    this.results = [];
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      this.results = results.length > 5 ? results.slice(0, 5) : results;
     }
-    ac.render();
-  };
-  service.textSearch({query: query}, callback);
+    this.render();
+  });
 };
 
 var triggerFn = function(obj) {
