@@ -1,3 +1,9 @@
+/* jslint browser: true, node: true */
+/* eslint-disable max-statements */
+/* global window, document, setTimeout, XMLHttpRequest */
+
+'use strict';
+
 /**
  * The autocomplete widget.
  *
@@ -178,7 +184,8 @@ AC.prototype.mount = function mount() {
 
   window.addEventListener('keydown', this.keydownHandler);
   window.addEventListener('input', this.inputHandler);
-  window.addEventListener('click', this.clickHandler);
+  window.addEventListener('mouseup', this.clickHandler);
+  window.addEventListener('touchstart', this.clickHandler);
   window.addEventListener('resize', this.resizeHandler);
 
   this.position();
@@ -201,7 +208,8 @@ AC.prototype.unmount = function unmount() {
 
   window.removeEventListener('keydown', this.keydownHandler);
   window.removeEventListener('input', this.inputHandler);
-  window.removeEventListener('click', this.clickHandler);
+  window.removeEventListener('mouseup', this.clickHandler);
+  window.removeEventListener('touchstart', this.clickHandler);
   window.removeEventListener('resize', this.resizeHandler);
 
   this.el.style.display = 'none';
@@ -553,3 +561,5 @@ AC.encodeQuery = function encode(obj) {
   }
   return str.join('&');
 };
+
+module.exports = AC;
