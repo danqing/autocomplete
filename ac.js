@@ -179,7 +179,7 @@ AC.prototype.mount = function mount() {
   window.addEventListener('keydown', this.keydownHandler);
   window.addEventListener('input', this.inputHandler);
   window.addEventListener('mouseup', this.clickHandler);
-  window.addEventListener('touchstart', this.clickHandler);
+  window.addEventListener('touchend', this.clickHandler);
   window.addEventListener('resize', this.resizeHandler);
 
   this.position();
@@ -203,7 +203,7 @@ AC.prototype.unmount = function unmount() {
   window.removeEventListener('keydown', this.keydownHandler);
   window.removeEventListener('input', this.inputHandler);
   window.removeEventListener('mouseup', this.clickHandler);
-  window.removeEventListener('touchstart', this.clickHandler);
+  window.removeEventListener('touchend', this.clickHandler);
   window.removeEventListener('resize', this.resizeHandler);
 
   this.el.style.display = 'none';
