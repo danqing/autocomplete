@@ -1,9 +1,3 @@
-/* jslint browser: true, node: true */
-/* eslint-disable max-statements */
-/* global window, document, setTimeout, XMLHttpRequest */
-
-'use strict';
-
 /**
  * The autocomplete widget.
  *
@@ -561,5 +555,3 @@ AC.encodeQuery = function encode(obj) {
   }
   return str.join('&');
 };
-
-module.exports = AC;
