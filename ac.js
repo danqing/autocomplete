@@ -163,10 +163,18 @@ AC.CLASS = {
   CANCEL: 'ac-cancel'
 };
 
+/**
+ * Checks whether the browser is mobile Safari.
+ *
+ * Mobile Safari does not accept random click events, and so we need to use
+ * touch events instead.
+ *
+ * @returns {boolean} Whether the browser is mobile safari.
+ */
 AC.isMobileSafari = function safari() {
   var ua = navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-  var iOSSafari = iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
+  return iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
 };
 
 /** Activates the autocomplete for mounting on input focus. */
@@ -225,6 +233,7 @@ AC.prototype.unmount = function unmount() {
   }
 
   this.el.style.display = 'none';
+  this.inputEl.blur();
   this.isMounted = false;
 };
 
