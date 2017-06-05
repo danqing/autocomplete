@@ -219,6 +219,7 @@ AC.prototype.unmount = function unmount() {
   }
 
   this.el.style.display = 'none';
+  this.inputEl.blur();
   this.isMounted = false;
 };
 
@@ -336,7 +337,6 @@ AC.prototype.setSelectedIndex = function select(i) {
  * @param {Event} e The triggering event.
  */
 AC.prototype.click = function click(e) {
-  console.log(e);
   var target = e.target || e.srcElement;
   var parent = target;
   var rowid = -1;
