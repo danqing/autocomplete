@@ -27,7 +27,7 @@
  * @constructor
  */
 var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
-    anchorEl) {
+  anchorEl) {
   /** @type {Element} The input element to attach to. */
   this.inputEl = inputEl;
 
@@ -66,6 +66,21 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * has not completed.
    */
   this.xhr = null;
+
+  /**
+   * @type {number}
+   *
+   * The delay after each keystroke before firing the remote XHR request, in
+   * milliseconds.
+   */
+  this.delay = 300;
+
+  /**
+   * @type {number}
+   *
+   * The minimum input length required before firing a remote request.
+   */
+  this.minLength = 1;
 
   /** @type {Array} Autocomplete results returned directly from server. */
   this.results = [];
@@ -240,15 +255,6 @@ AC.prototype.position = function position() {
   this.el.style.width = rect.width + 'px';
 };
 
-/** Positions the autocomplete to be right beneath the input. */
-AC.prototype.position = function position() {
-  var rect = this.anchorEl.getBoundingClientRect();
-  var offset = AC.findPosition(this.anchorEl);
-  this.el.style.top = offset.top + rect.height + 'px';
-  this.el.style.left = offset.left + 'px';
-  this.el.style.width = rect.width + 'px';
-};
-
 /**
  * Handles keydown event.
  *
@@ -271,7 +277,7 @@ AC.prototype.keydown = function keydown(e) {
     case AC.KEYCODE.RIGHT:
       if (this.selectedIndex > -1) {
         this.inputEl.value =
-            this.results[this.selectedIndex][this.primaryTextKey];
+          this.results[this.selectedIndex][this.primaryTextKey];
         this.isRightArrowComplete = true;
       }
       break;
@@ -297,7 +303,8 @@ AC.prototype.keydown = function keydown(e) {
 AC.prototype.input = function input() {
   this.value = this.inputEl.value;
   this.isRightArrowComplete = false;
-  this.requestMatch();
+  clearTimeout(this.timeoutID);
+  this.timeoutID = setTimeout(this.requestMatch.bind(this), this.delay);
 };
 
 /**
@@ -400,7 +407,7 @@ AC.prototype.requestMatch = function request() {
 
   this.abortPendingRequest();
 
-  if (!this.value) {
+  if (this.value.length < this.minLength) {
     this.results = [];
     this.selectedIndex = -1;
     return;
@@ -485,12 +492,12 @@ AC.prototype.createRow = function create(i) {
 
   var primary = AC.createEl('span', AC.CLASS.PRIMARY_SPAN);
   primary.appendChild(AC.createMatchTextEls(this.value,
-      data[this.primaryTextKey]));
+    data[this.primaryTextKey]));
   el.appendChild(primary);
 
   if (data[this.secondaryTextKey]) {
     el.appendChild(AC.createEl('span',
-        AC.CLASS.SECONDARY_SPAN, data[this.secondaryTextKey]));
+      AC.CLASS.SECONDARY_SPAN, data[this.secondaryTextKey]));
   }
 
   return el;
@@ -519,14 +526,14 @@ AC.createMatchTextEls = function match(input, complete) {
   if (index === 0) {
     fragment.appendChild(AC.createEl('b', null, complete.substring(0, len)));
     fragment.appendChild(AC.createEl('span', null,
-        complete.substring(len, complete.length)));
+      complete.substring(len, complete.length)));
   } else if (index > 0) {
     fragment.appendChild(AC.createEl('span', null,
-        complete.substring(0, index)));
+      complete.substring(0, index)));
     fragment.appendChild(AC.createEl('b', null,
-        complete.substring(index, index + len)));
+      complete.substring(index, index + len)));
     fragment.appendChild(AC.createEl('span', null,
-        complete.substring(index + len, complete.length)));
+      complete.substring(index + len, complete.length)));
   } else {
     fragment.appendChild(AC.createEl('span', null, complete));
   }
@@ -567,7 +574,10 @@ AC.findPosition = function position(el) {
   var r = el.getBoundingClientRect();
   var top = r.top + window.pageYOffset || document.documentElement.scrollTop;
   var left = r.left + window.pageXOffset || document.documentElement.scrollLeft;
-  return {left: left, top: top};
+  return {
+    left: left,
+    top: top
+  };
 };
 
 /**
