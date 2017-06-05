@@ -93,7 +93,7 @@ ac.secondaryTextKey = 'formatted_address';
 In addition, there are two advanced configurations that can be set:
 
 * `delay` is the delay after each keystroke before firing the XHR request, in milliseconds. Default is 300ms.
-* `minLength` is the minimum input length required before firing the XHR request. Default is 1.
+* `minLength` is the minimum input length required before firing the XHR request. Default is 1. This only works with the default `requestFn`. If you supply a custom `requestFn`, it will always be triggered and it is up to you to handle minimum length logic.
 
 They are not exposed as part of the constructor function, but can be set after the autocomplete object is created:
 
