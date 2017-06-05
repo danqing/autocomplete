@@ -73,6 +73,21 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    */
   this.xhr = null;
 
+  /**
+   * @type {number}
+   *
+   * The delay after each keystroke before firing the remote XHR request, in
+   * milliseconds.
+   */
+  this.delay = 300;
+
+  /**
+   * @type {number}
+   *
+   * The minimum input length required before firing a remote request.
+   */
+  this.minLength = 1;
+
   /** @type {Array} Autocomplete results returned directly from server. */
   this.results = [];
 
@@ -294,7 +309,8 @@ AC.prototype.keydown = function keydown(e) {
 AC.prototype.input = function input() {
   this.value = this.inputEl.value;
   this.isRightArrowComplete = false;
-  this.requestMatch();
+  clearTimeout(this.timeoutID);
+  this.timeoutID = setTimeout(this.requestMatch.bind(this), this.delay);
 };
 
 /**
@@ -397,7 +413,7 @@ AC.prototype.requestMatch = function request() {
 
   this.abortPendingRequest();
 
-  if (!this.value) {
+  if (this.value.length < this.minLength) {
     this.results = [];
     this.selectedIndex = -1;
     return;

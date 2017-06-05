@@ -90,6 +90,19 @@ ac.primaryTextKey = 'name';
 ac.secondaryTextKey = 'formatted_address';
 ```
 
+In addition, there are two advanced configurations that can be set:
+
+* `delay` is the delay after each keystroke before firing the XHR request, in milliseconds. Default is 300ms.
+* `minLength` is the minimum input length required before firing the XHR request. Default is 1.
+
+They are not exposed as part of the constructor function, but can be set after the autocomplete object is created:
+
+```js
+var ac = new AC(...);
+ac.delay = 500;
+ac.minLength = 3;
+```
+
 ## Styles
 
 The library comes with a [default style](https://github.com/danqing/autocomplete/blob/master/ac.css) for your reference. Start with it so the autocomplete is working, and then modify it to meet your UI requirements.
