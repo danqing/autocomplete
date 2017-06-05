@@ -157,6 +157,12 @@ AC.CLASS = {
   CANCEL: 'ac-cancel'
 };
 
+AC.isMobileSafari = function safari() {
+  var ua = navigator.userAgent;
+  var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+  var iOSSafari = iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
+};
+
 /** Activates the autocomplete for mounting on input focus. */
 AC.prototype.activate = function activate() {
   this.inputEl.addEventListener('focus', this.mount.bind(this));
@@ -178,9 +184,12 @@ AC.prototype.mount = function mount() {
 
   window.addEventListener('keydown', this.keydownHandler);
   window.addEventListener('input', this.inputHandler);
-  window.addEventListener('mouseup', this.clickHandler);
-  window.addEventListener('touchend', this.clickHandler);
   window.addEventListener('resize', this.resizeHandler);
+  if (AC.isMobileSafari()) {
+    window.addEventListener('touchend', this.clickHandler);
+  } else {
+    window.addEventListener('click', this.clickHandler);
+  }
 
   this.position();
   this.render();
@@ -202,12 +211,24 @@ AC.prototype.unmount = function unmount() {
 
   window.removeEventListener('keydown', this.keydownHandler);
   window.removeEventListener('input', this.inputHandler);
-  window.removeEventListener('mouseup', this.clickHandler);
-  window.removeEventListener('touchend', this.clickHandler);
   window.removeEventListener('resize', this.resizeHandler);
+  if (AC.isMobileSafari()) {
+    window.removeEventListener('touchend', this.clickHandler);
+  } else {
+    window.removeEventListener('click', this.clickHandler);
+  }
 
   this.el.style.display = 'none';
   this.isMounted = false;
+};
+
+/** Positions the autocomplete to be right beneath the input. */
+AC.prototype.position = function position() {
+  var rect = this.anchorEl.getBoundingClientRect();
+  var offset = AC.findPosition(this.anchorEl);
+  this.el.style.top = offset.top + rect.height + 'px';
+  this.el.style.left = offset.left + 'px';
+  this.el.style.width = rect.width + 'px';
 };
 
 /** Positions the autocomplete to be right beneath the input. */

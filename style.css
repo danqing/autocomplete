@@ -63,3 +63,9 @@ input:focus {
   outline: 0;
   border: 1px solid #eee;
 }
+
+@media only screen and (max-width: 500px) {
+  .input-wrapper, input {
+    width: 90%;
+  }
+}
