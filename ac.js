@@ -160,7 +160,7 @@ AC.CLASS = {
 AC.isMobileSafari = function safari() {
   var ua = navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-  var iOSSafari = iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
+  return iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
 };
 
 /** Activates the autocomplete for mounting on input focus. */
@@ -186,7 +186,7 @@ AC.prototype.mount = function mount() {
   window.addEventListener('input', this.inputHandler);
   window.addEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    document.body.addEventListener('touchend', this.clickHandler);
+    window.addEventListener('touchend', this.clickHandler);
   } else {
     window.addEventListener('click', this.clickHandler);
   }
@@ -213,7 +213,7 @@ AC.prototype.unmount = function unmount() {
   window.removeEventListener('input', this.inputHandler);
   window.removeEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    document.body.removeEventListener('touchend', this.clickHandler);
+    window.removeEventListener('touchend', this.clickHandler);
   } else {
     window.removeEventListener('click', this.clickHandler);
   }
