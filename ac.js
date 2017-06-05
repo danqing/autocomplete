@@ -186,7 +186,7 @@ AC.prototype.mount = function mount() {
   window.addEventListener('input', this.inputHandler);
   window.addEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.addEventListener('touchend', this.clickHandler);
+    window.addEventListener('touchstart', this.clickHandler);
   } else {
     window.addEventListener('click', this.clickHandler);
   }
@@ -213,7 +213,7 @@ AC.prototype.unmount = function unmount() {
   window.removeEventListener('input', this.inputHandler);
   window.removeEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.removeEventListener('touchend', this.clickHandler);
+    window.removeEventListener('touchstart', this.clickHandler);
   } else {
     window.removeEventListener('click', this.clickHandler);
   }
