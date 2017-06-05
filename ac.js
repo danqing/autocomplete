@@ -186,7 +186,7 @@ AC.prototype.mount = function mount() {
   window.addEventListener('input', this.inputHandler);
   window.addEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.addEventListener('touchstart', this.clickHandler);
+    document.body.addEventListener('touchend', this.clickHandler);
   } else {
     window.addEventListener('click', this.clickHandler);
   }
@@ -213,7 +213,7 @@ AC.prototype.unmount = function unmount() {
   window.removeEventListener('input', this.inputHandler);
   window.removeEventListener('resize', this.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.removeEventListener('touchstart', this.clickHandler);
+    document.body.removeEventListener('touchend', this.clickHandler);
   } else {
     window.removeEventListener('click', this.clickHandler);
   }
@@ -336,6 +336,7 @@ AC.prototype.setSelectedIndex = function select(i) {
  * @param {Event} e The triggering event.
  */
 AC.prototype.click = function click(e) {
+  console.log(e);
   var target = e.target || e.srcElement;
   var parent = target;
   var rowid = -1;
