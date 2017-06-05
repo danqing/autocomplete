@@ -157,6 +157,14 @@ AC.CLASS = {
   CANCEL: 'ac-cancel'
 };
 
+/**
+ * Checks whether the browser is mobile Safari.
+ *
+ * Mobile Safari does not accept random click events, and so we need to use
+ * touch events instead.
+ *
+ * @returns {boolean} Whether the browser is mobile safari.
+ */
 AC.isMobileSafari = function safari() {
   var ua = navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
