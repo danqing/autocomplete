@@ -1,6 +1,6 @@
 # Autocomplete [![npm version](https://badge.fury.io/js/remote-ac.svg)](http://badge.fury.io/js/remote-ac)
 
-This is a light-weight JavaScript widget that provides autocomplete for user inputs that gets its data from remote sources. It has the following nice features:
+This is a light-weight JavaScript widget that provides autocomplete for freeform text inputs that get their suggestions from remote sources. One such example is address autocomplete. It has the following nice features:
 
 * Handles fetching results via HTTP.
 * Supports keyboard navigation.
@@ -90,7 +90,7 @@ ac.primaryTextKey = 'name';
 ac.secondaryTextKey = 'formatted_address';
 ```
 
-In addition, there are two advanced configurations that can be set:
+Two other configurations are available:
 
 * `delay` is the delay after each keystroke before firing the XHR request, in milliseconds. Default is 300ms.
 * `minLength` is the minimum input length required before firing the XHR request. Default is 1. This only works with the default `requestFn`. If you supply a custom `requestFn`, it will always be triggered and it is up to you to handle minimum length logic.
