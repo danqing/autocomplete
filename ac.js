@@ -103,6 +103,9 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
   /** @type {string} The key of the secondary text in an autocomplete result. */
   this.secondaryTextKey = 'subtitle';
 
+  /** @type {string} The CSS prefix to use for this instance. */
+  this.cssPrefix = 'ac-';
+
   /**
    * @type {boolean}
    *
@@ -166,16 +169,19 @@ AC.KEYCODE = {
   DOWN: 40
 };
 
-/** CSS classes. */
+ /**
+  * CSS classes. By default, each string will be prefixed with 'ac-. This can be
+  * overridden, by setting the instance property ac.prefix to a different value.
+  */
 AC.CLASS = {
-  WRAPPER: 'ac-wrap',
-  ROW_WRAPPER: 'ac-rwrap',
-  ROW: 'ac-row',
-  SELECTED_ROW: 'ac-row selected',
-  PRIMARY_SPAN: 'ac-pr',
-  SECONDARY_SPAN: 'ac-sc',
-  MOBILE_INPUT: 'ac-minput',
-  CANCEL: 'ac-cancel'
+  WRAPPER: 'wrap',
+  ROW_WRAPPER: 'rwrap',
+  ROW: 'row',
+  SELECTED_ROW: 'row selected',
+  PRIMARY_SPAN: 'pr',
+  SECONDARY_SPAN: 'sc',
+  MOBILE_INPUT: 'minput',
+  CANCEL: 'cancel'
 };
 
 /**
@@ -197,6 +203,15 @@ AC.prototype.activate = function activate() {
   this.inputEl.addEventListener('focus', this.mount.bind(this));
 };
 
+/* Get a specific prefixed CSS class */
+AC.prototype.getCSS = function(elementID) {
+  var className = AC.CLASS[elementID];
+  if (className === undefined) {
+    throw new Error('CSS element ID "' + elementID + '" not recognized.');
+  }
+  return this.cssPrefix + className;
+}
+
 /** Mounts the autocomplete. */
 AC.prototype.mount = function mount() {
   if (this.isMounted) {
@@ -204,7 +219,7 @@ AC.prototype.mount = function mount() {
   }
 
   if (!this.el) {
-    this.el = AC.createEl('div', AC.CLASS.WRAPPER);
+    this.el = AC.createEl('div', this.getCSS('WRAPPER'));
     this.el.style.position = 'absolute';
     document.body.appendChild(this.el);
   } else {
@@ -336,10 +351,10 @@ AC.prototype.setSelectedIndex = function select(i) {
   }
 
   if (this.selectedIndex >= 0) {
-    this.rows[this.selectedIndex].className = AC.CLASS.ROW;
+    this.rows[this.selectedIndex].className = this.getCSS('ROW');
   }
 
-  this.rows[i].className = AC.CLASS.SELECTED_ROW;
+  this.rows[i].className = this.getCSS('SELECTED_ROW');
   this.selectedIndex = i;
 
   if (this.isRightArrowComplete) {
@@ -367,7 +382,7 @@ AC.prototype.click = function click(e) {
       return;
     }
 
-    if (parent.className.match(AC.CLASS.ROW)) {
+    if (parent.className.match(this.getCSS('ROW'))) {
       var id = parseInt(parent.getAttribute('data-rid'), 10);
       if (!isNaN(id)) {
         rowid = id;
@@ -460,7 +475,7 @@ AC.prototype.render = function render() {
     this.el.removeChild(this.rowWrapperEl);
   }
 
-  this.rowWrapperEl = AC.createEl('div', AC.CLASS.ROW_WRAPPER);
+  this.rowWrapperEl = AC.createEl('div', this.getCSS('ROW_WRAPPER'));
 
   if (this.results.length) {
     var fragment = document.createDocumentFragment();
@@ -468,7 +483,7 @@ AC.prototype.render = function render() {
       var row = null;
       if (this.rowFn) {
         row = this.rowFn(this.results[i]);
-        row.className += ' ' + AC.CLASS.ROW;
+        row.className += ' ' + this.getCSS('ROW');
       } else {
         row = this.createRow(i);
       }
@@ -494,16 +509,16 @@ AC.prototype.render = function render() {
  */
 AC.prototype.createRow = function create(i) {
   var data = this.results[i];
-  var el = AC.createEl('div', AC.CLASS.ROW);
+  var el = AC.createEl('div', this.getCSS('ROW'));
 
-  var primary = AC.createEl('span', AC.CLASS.PRIMARY_SPAN);
+  var primary = AC.createEl('span', this.getCSS('PRIMARY_SPAN'));
   primary.appendChild(AC.createMatchTextEls(this.value,
       data[this.primaryTextKey]));
   el.appendChild(primary);
 
   if (data[this.secondaryTextKey]) {
     el.appendChild(AC.createEl('span',
-        AC.CLASS.SECONDARY_SPAN, data[this.secondaryTextKey]));
+        this.getCSS('SECONDARY_SPAN'), data[this.secondaryTextKey]));
   }
 
   return el;
