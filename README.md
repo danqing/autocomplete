@@ -90,10 +90,11 @@ ac.primaryTextKey = 'name';
 ac.secondaryTextKey = 'formatted_address';
 ```
 
-Two other configurations are available:
+Three other configurations are available:
 
 * `delay` is the delay after each keystroke before firing the XHR request, in milliseconds. Default is 300ms.
 * `minLength` is the minimum input length required before firing the XHR request. Default is 1. This only works with the default `requestFn`. If you supply a custom `requestFn`, it will always be triggered and it is up to you to handle minimum length logic.
+* `cssPrefix` is the prefix added to each CSS class name, in case the default prefix conflicts, or you have multiple widgets with different styling. The default is 'ac-'.
 
 They are not exposed as part of the constructor function, but can be set after the autocomplete object is created:
 
@@ -101,6 +102,7 @@ They are not exposed as part of the constructor function, but can be set after t
 var ac = new AC(...);
 ac.delay = 500;
 ac.minLength = 3;
+ac.cssPrefix = 'ac-secondary-widget-';
 ```
 
 ## Styles
