@@ -27,7 +27,9 @@
  *     representing the row. If this function is not provided, the widget will
  *     render the rows with the default `createRow` function.
  * @param {Function} triggerFn The optional function called when an
- *     autocomplete result is selected.
+ *     autocomplete result is selected. First argument is the row object,
+ *     second argument is an event object for the user action (click or
+ *     keypress).
  * @param {Element} anchorEl The optional DOM element to attach the autocomplete
  *     to. If not provided, the autocomplete is attached to the input element.
  * @constructor
@@ -304,7 +306,7 @@ AC.prototype.keydown = function keydown(e) {
       break;
     case AC.KEYCODE.ENTER:
       if (this.selectedIndex > -1) {
-        this.trigger();
+        this.trigger(e);
       }
       break;
     case AC.KEYCODE.ESC:
@@ -395,7 +397,7 @@ AC.prototype.click = function click(e) {
 
   if (rowid > -1) {
     this.selectedIndex = rowid;
-    this.trigger(rowid);
+    this.trigger(e);
   } else {
     this.unmount();
   }
@@ -404,13 +406,15 @@ AC.prototype.click = function click(e) {
 /**
  * Triggers the selected item. This function sets the value of the input,
  * calls the provided trigger function, and unmounts the autocomplete.
+ *
+ * @param {Event} event The triggering event.
  */
-AC.prototype.trigger = function trigger() {
+AC.prototype.trigger = function trigger(event) {
   this.value = this.results[this.selectedIndex][this.primaryTextKey];
   this.inputEl.value = this.value;
   this.inputEl.blur();
   if (this.triggerFn) {
-    this.triggerFn(this.results[this.selectedIndex]);
+    this.triggerFn(this.results[this.selectedIndex], event);
   }
   this.unmount();
 };
