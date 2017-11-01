@@ -159,6 +159,14 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    */
   this.resizeHandler = this.position.bind(this);
 
+  /**
+   * @type {Function}
+   *
+   * The mount handler. This is saved so it can be removed if the autocomplete
+   * is deactivated completely.
+   */
+  this.mountHandler = this.mount.bind(this);
+
   this.activate();
 };
 
@@ -202,7 +210,14 @@ AC.isMobileSafari = function safari() {
 
 /** Activates the autocomplete for mounting on input focus. */
 AC.prototype.activate = function activate() {
-  this.inputEl.addEventListener('focus', this.mount.bind(this));
+  this.inputEl.addEventListener('focus', this.mountHandler);
+};
+
+/** Deactivates the autocomplete. */
+AC.prototype.deactivate = function() {
+  // Ensure we're unmounted completely
+  this.unmount();
+  this.inputEl.removeEventListener('focus', this.mountHandler);
 };
 
 /* Get a specific prefixed CSS class */
