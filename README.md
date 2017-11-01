@@ -105,6 +105,8 @@ ac.minLength = 3;
 ac.cssPrefix = 'ac-secondary-widget-';
 ```
 
+When the autocomplete is created, it's automatically activated, meaning that focusing on the input will trigger the autocomplete logic. You can call `ac.deactivate()` to deactivate the autocomplete, and reactivate it with `ac.activate()`.
+
 ## Styles
 
 The library comes with a [default style](https://github.com/danqing/autocomplete/blob/master/ac.css) for your reference. Start with it so the autocomplete is working, and then modify it to meet your UI requirements.
