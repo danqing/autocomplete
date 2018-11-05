@@ -399,6 +399,13 @@ AC.prototype.click = function click(e) {
       return;
     }
 
+    // Certain DOM elements, notably SVGs, have className property but not
+    // className.match. Clicking in such elements should dismiss the AC because
+    // it's clicking outside.
+    if (!parent.className.match) {
+      break;
+    }
+
     if (parent.className.match(this.getCSS('ROW'))) {
       var id = parseInt(parent.getAttribute('data-rid'), 10);
       if (!isNaN(id)) {
