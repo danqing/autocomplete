@@ -18,7 +18,7 @@
  * @param {Function} requestFn The optional request function that allows full
  *     customization of the behavior when the user types something. It takes a
  *     single argument, the user input, and should write the results into
- *     `this.results` and then call `this.render()` to display the results. If
+ *     `self.results` and then call `self.render()` to display the results. If
  *     this function is specified, both urlFn and resultFn are ignored.
  * @param {Function} resultFn The optional function to post-process the
  *     received autocomplete results before displaying them with this widget.
@@ -39,35 +39,37 @@
  */
 var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
     anchorEl) {
+  var self = this;
+
   /** @type {Element} The input element to attach to. */
-  this.inputEl = inputEl;
+  self.inputEl = inputEl;
 
   /** @type {Element} The element to position the autocomplete below. */
-  this.anchorEl = anchorEl || inputEl;
+  self.anchorEl = anchorEl || inputEl;
 
   /** @type {Function} */
-  this.triggerFn = triggerFn;
+  self.triggerFn = triggerFn;
 
   /** @type {Function} */
-  this.resultFn = resultFn;
+  self.resultFn = resultFn;
 
   /** @type {Function} */
-  this.requestFn = requestFn;
+  self.requestFn = requestFn;
 
   /** @type {Function} */
-  this.rowFn = rowFn;
+  self.rowFn = rowFn;
 
   /** @type {Function} */
-  this.urlBuilderFn = urlFn;
+  self.urlBuilderFn = urlFn;
 
   /** @type {string} The user input value. */
-  this.value = '';
+  self.value = '';
 
   /** @type {Element} The wrapper element of the autocomplete. */
-  this.el = null;
+  self.el = null;
 
   /** @type {Element} The wrapper element of the autocomplete rows. */
-  this.rowWrapperEl = null;
+  self.rowWrapperEl = null;
 
   /**
    * @type {XMLHttpRequest}
@@ -76,7 +78,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * be one request at a time. New request will kill the existing one if it
    * has not completed.
    */
-  this.xhr = null;
+  self.xhr = null;
 
   /**
    * @type {number}
@@ -84,40 +86,40 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The delay after each keystroke before firing the remote XHR request, in
    * milliseconds.
    */
-  this.delay = 300;
+  self.delay = 300;
 
   /**
    * @type {number}
    *
    * The minimum input length required before firing a remote request.
    */
-  this.minLength = 1;
+  self.minLength = 1;
 
   /** @type {Array} Autocomplete results returned directly from server. */
-  this.results = [];
+  self.results = [];
 
   /** @type {Array.<Element>} The array of all result row elements. */
-  this.rows = [];
+  self.rows = [];
 
   /** @type {number} The index currently selected. -1 if nothing selected. */
-  this.selectedIndex = -1;
+  self.selectedIndex = -1;
 
   /** @type {string} The key of the primary text in an autocomplete result. */
-  this.primaryTextKey = 'title';
+  self.primaryTextKey = 'title';
 
   /** @type {string} The key of the secondary text in an autocomplete result. */
-  this.secondaryTextKey = 'subtitle';
+  self.secondaryTextKey = 'subtitle';
 
   /** @type {string} The CSS prefix to use for this instance. */
-  this.cssPrefix = 'ac-';
+  self.cssPrefix = 'ac-';
 
   /**
    * @type {boolean}
    *
    * Whether autocomplete is currently mounted. This should NOT be modified.
-   * Call this.mount or this.unmount instead.
+   * Call self.mount or self.unmount instead.
    */
-  this.isMounted = false;
+  self.isMounted = false;
 
   /**
    * @type {boolean}
@@ -128,7 +130,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * When the user starts to input again, the "right arrow complete" mode will
    * end.
    */
-  this.isRightArrowComplete = false;
+  self.isRightArrowComplete = false;
 
   /**
    * @type {Function}
@@ -136,7 +138,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The keydown handler. This is saved so it can be unbound when the
    * autocomplete is unmounted.
    */
-  this.keydownHandler = this.keydown.bind(this);
+  self.keydownHandler = self.keydown.bind(self);
 
   /**
    * @type {Function}
@@ -144,7 +146,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The input handler. This is saved so it can be unbound when the
    * autocomplete is unmounted.
    */
-  this.inputHandler = this.input.bind(this);
+  self.inputHandler = self.input.bind(self);
 
   /**
    * @type {Function}
@@ -152,7 +154,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The click handler. This is saved so it can be unbound when the
    * autocomplete is unmounted.
    */
-  this.clickHandler = this.click.bind(this);
+  self.clickHandler = self.click.bind(self);
 
   /**
    * @type {Function}
@@ -160,7 +162,7 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The resize handler. This is saved so it can be unbound when the
    * autocomplete is unmounted.
    */
-  this.resizeHandler = this.position.bind(this);
+  self.resizeHandler = self.position.bind(self);
 
   /**
    * @type {Function}
@@ -168,18 +170,18 @@ var AC = function init(inputEl, urlFn, requestFn, resultFn, rowFn, triggerFn,
    * The mount handler. This is saved so it can be removed if the autocomplete
    * is deactivated completely.
    */
-  this.mountHandler = this.mount.bind(this);
+  self.mountHandler = self.mount.bind(self);
 
-  this.activate();
+  self.activate();
 };
 
 AC.KEYCODE = {
   ENTER: 13,
-  ESC: 27,
-  LEFT: 37,
-  UP: 38,
+  ESC:   27,
+  LEFT:  37,
+  UP:    38,
   RIGHT: 39,
-  DOWN: 40
+  DOWN:  40
 };
 
  /**
@@ -187,14 +189,14 @@ AC.KEYCODE = {
   * overridden, by setting the instance property ac.prefix to a different value.
   */
 AC.CLASS = {
-  WRAPPER: 'wrap',
-  ROW_WRAPPER: 'rwrap',
-  ROW: 'row',
-  SELECTED_ROW: 'row selected',
-  PRIMARY_SPAN: 'pr',
+  WRAPPER:        'wrap',
+  ROW_WRAPPER:    'rwrap',
+  ROW:            'row',
+  SELECTED_ROW:   'row selected',
+  PRIMARY_SPAN:   'pr',
   SECONDARY_SPAN: 'sc',
-  MOBILE_INPUT: 'minput',
-  CANCEL: 'cancel'
+  MOBILE_INPUT:   'minput',
+  CANCEL:         'cancel'
 };
 
 /**
@@ -206,21 +208,26 @@ AC.CLASS = {
  * @returns {boolean} Whether the browser is mobile safari.
  */
 AC.isMobileSafari = function safari() {
-  var ua = navigator.userAgent;
+  var ua  = navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+
   return iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
 };
 
 /** Activates the autocomplete for mounting on input focus. */
 AC.prototype.activate = function activate() {
-  this.inputEl.addEventListener('focus', this.mountHandler);
+  var self = this;
+
+  self.inputEl.addEventListener('focus', self.mountHandler);
 };
 
 /** Deactivates the autocomplete. */
 AC.prototype.deactivate = function() {
+  var self = this;
+
   // Ensure we're unmounted completely
-  this.unmount();
-  this.inputEl.removeEventListener('focus', this.mountHandler);
+  self.unmount();
+  self.inputEl.removeEventListener('focus', self.mountHandler);
 };
 
 /* Get a specific prefixed CSS class */
@@ -234,66 +241,75 @@ AC.prototype.getCSS = function(elementID) {
 
 /** Mounts the autocomplete. */
 AC.prototype.mount = function mount() {
-  if (this.isMounted) {
+  var self      = this;
+  var _window   = window;
+  var _document = document;
+
+  if (self.isMounted) {
     return;
   }
 
-  if (!this.el) {
-    this.el = AC.createEl('div', this.getCSS('WRAPPER'));
-    this.el.style.position = 'absolute';
-    document.body.appendChild(this.el);
+  if (!self.el) {
+    self.el = AC.createEl('div', self.getCSS('WRAPPER'));
+    self.el.style.position = 'absolute';
+    _document.body.appendChild(self.el);
   } else {
-    this.el.style.display = '';
+    self.el.style.display = '';
   }
 
-  window.addEventListener('keydown', this.keydownHandler);
-  window.addEventListener('input', this.inputHandler);
-  window.addEventListener('resize', this.resizeHandler);
+  _window.addEventListener('keydown',    self.keydownHandler);
+  _window.addEventListener('input',      self.inputHandler);
+  _window.addEventListener('resize',     self.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.addEventListener('touchend', this.clickHandler);
+    _window.addEventListener('touchend', self.clickHandler);
   } else {
-    window.addEventListener('click', this.clickHandler);
+    _window.addEventListener('click',    self.clickHandler);
   }
 
-  this.position();
-  this.render();
-  this.isMounted = true;
+  self.position();
+  self.render();
+  self.isMounted = true;
 
-  if (Math.max(document.documentElement.clientWidth,
-      window.innerWidth || 0) < 500) {
+  if (Math.max(_document.documentElement.clientWidth,
+      _window.innerWidth || 0) < 500) {
     setTimeout(function top() {
       this.inputEl.scrollIntoView();
-    }.bind(this), 1);
+    }.bind(self), 1);
   }
 };
 
 /** Unmounts the autocomplete. */
 AC.prototype.unmount = function unmount() {
-  if (!this.isMounted) {
+  var self    = this;
+  var _window = window;
+
+  if (!self.isMounted) {
     return;
   }
 
-  window.removeEventListener('keydown', this.keydownHandler);
-  window.removeEventListener('input', this.inputHandler);
-  window.removeEventListener('resize', this.resizeHandler);
+  _window.removeEventListener('keydown',    self.keydownHandler);
+  _window.removeEventListener('input',      self.inputHandler);
+  _window.removeEventListener('resize',     self.resizeHandler);
   if (AC.isMobileSafari()) {
-    window.removeEventListener('touchend', this.clickHandler);
+    _window.removeEventListener('touchend', self.clickHandler);
   } else {
-    window.removeEventListener('click', this.clickHandler);
+    _window.removeEventListener('click',    self.clickHandler);
   }
 
-  this.el.style.display = 'none';
-  this.inputEl.blur();
-  this.isMounted = false;
+  self.el.style.display = 'none';
+  self.inputEl.blur();
+  self.isMounted = false;
 };
 
 /** Positions the autocomplete to be right beneath the input. */
 AC.prototype.position = function position() {
-  var rect = this.anchorEl.getBoundingClientRect();
-  var offset = AC.findPosition(this.anchorEl);
-  this.el.style.top = offset.top + rect.height + 'px';
-  this.el.style.left = offset.left + 'px';
-  this.el.style.width = rect.width + 'px';
+  var self   = this;
+  var rect   = self.anchorEl.getBoundingClientRect();
+  var offset = AC.findPosition(self.anchorEl);
+
+  self.el.style.top   = offset.top  + rect.height + 'px';
+  self.el.style.left  = offset.left + 'px';
+  self.el.style.width = rect.width  + 'px';
 };
 
 /**
@@ -308,28 +324,30 @@ AC.prototype.position = function position() {
  * @param {Event} e The keydown event.
  */
 AC.prototype.keydown = function keydown(e) {
+  var self = this;
+
   switch (e.keyCode) {
     case AC.KEYCODE.UP:
-      this.setSelectedIndex(this.selectedIndex - 1);
+      self.setSelectedIndex(self.selectedIndex - 1);
       break;
     case AC.KEYCODE.DOWN:
-      this.setSelectedIndex(this.selectedIndex + 1);
+      self.setSelectedIndex(self.selectedIndex + 1);
       break;
     case AC.KEYCODE.RIGHT:
-      if (this.selectedIndex > -1) {
-        this.inputEl.value =
-            this.results[this.selectedIndex][this.primaryTextKey];
-        this.isRightArrowComplete = true;
+      if (self.selectedIndex > -1) {
+        self.inputEl.value =
+            self.results[self.selectedIndex][self.primaryTextKey];
+        self.isRightArrowComplete = true;
       }
       break;
     case AC.KEYCODE.ENTER:
-      if (this.selectedIndex > -1) {
-        this.trigger(e);
+      if (self.selectedIndex > -1) {
+        self.trigger(e);
       }
       break;
     case AC.KEYCODE.ESC:
-      this.inputEl.blur();
-      this.unmount();
+      self.inputEl.blur();
+      self.unmount();
       break;
     default:
       break;
@@ -342,10 +360,12 @@ AC.prototype.keydown = function keydown(e) {
  * is already changed.
  */
 AC.prototype.input = function input() {
-  this.value = this.inputEl.value;
-  this.isRightArrowComplete = false;
-  clearTimeout(this.timeoutID);
-  this.timeoutID = setTimeout(this.requestMatch.bind(this), this.delay);
+  var self   = this;
+  self.value = self.inputEl.value;
+  self.isRightArrowComplete = false;
+
+  clearTimeout(self.timeoutID);
+  self.timeoutID = setTimeout(self.requestMatch.bind(self), self.delay);
 };
 
 /**
@@ -356,29 +376,31 @@ AC.prototype.input = function input() {
  * @param {number} i The selected index to set.
  */
 AC.prototype.setSelectedIndex = function select(i) {
-  if (!this.results.length) {
+  var self = this;
+
+  if (!self.results.length) {
     return;
   }
 
-  if (i === this.selectedIndex) {
+  if (i === self.selectedIndex) {
     return;
   }
-  if (i >= this.results.length) {
-    i -= this.results.length;
+  if (i >= self.results.length) {
+    i -= self.results.length;
   }
   if (i < 0) {
-    i += this.results.length;
+    i += self.results.length;
   }
 
-  if (this.selectedIndex >= 0) {
-    this.rows[this.selectedIndex].className = this.getCSS('ROW');
+  if (self.selectedIndex >= 0) {
+    self.rows[self.selectedIndex].className = self.getCSS('ROW');
   }
 
-  this.rows[i].className = this.getCSS('SELECTED_ROW');
-  this.selectedIndex = i;
+  self.rows[i].className = self.getCSS('SELECTED_ROW');
+  self.selectedIndex = i;
 
-  if (this.isRightArrowComplete) {
-    this.inputEl.value = this.results[this.selectedIndex][this.primaryTextKey];
+  if (self.isRightArrowComplete) {
+    self.inputEl.value = self.results[self.selectedIndex][self.primaryTextKey];
   }
 };
 
@@ -395,10 +417,11 @@ AC.prototype.setSelectedIndex = function select(i) {
 AC.prototype.click = function click(e) {
   var target = e.target || e.srcElement;
   var parent = target;
-  var rowid = -1;
+  var rowid  = -1;
+  var self   = this;
 
   while (parent) {
-    if (parent === this.inputEl || parent === this.el) {
+    if (parent === self.inputEl || parent === self.el) {
       return;
     }
 
@@ -409,7 +432,7 @@ AC.prototype.click = function click(e) {
       break;
     }
 
-    if (parent.className.match(this.getCSS('ROW'))) {
+    if (parent.className.match(self.getCSS('ROW'))) {
       var id = parseInt(parent.getAttribute('data-rid'), 10);
       if (!isNaN(id)) {
         rowid = id;
@@ -421,10 +444,10 @@ AC.prototype.click = function click(e) {
   }
 
   if (rowid > -1) {
-    this.selectedIndex = rowid;
-    this.trigger(e);
+    self.selectedIndex = rowid;
+    self.trigger(e);
   } else {
-    this.unmount();
+    self.unmount();
   }
 };
 
@@ -435,13 +458,15 @@ AC.prototype.click = function click(e) {
  * @param {Event} event The triggering event.
  */
 AC.prototype.trigger = function trigger(event) {
-  this.value = this.results[this.selectedIndex][this.primaryTextKey];
-  this.inputEl.value = this.value;
-  this.inputEl.blur();
-  if (this.triggerFn) {
-    this.triggerFn(this.results[this.selectedIndex], event);
+  var self = this;
+
+  self.value = self.results[self.selectedIndex][self.primaryTextKey];
+  self.inputEl.value = self.value;
+  self.inputEl.blur();
+  if (self.triggerFn) {
+    self.triggerFn(self.results[self.selectedIndex], event);
   }
-  this.unmount();
+  self.unmount();
 };
 
 /**
@@ -450,44 +475,49 @@ AC.prototype.trigger = function trigger(event) {
  * will be updated. Otherwise the UI will be left unmodified.
  */
 AC.prototype.requestMatch = function request() {
-  if (this.requestFn) {
-    this.requestFn(this.value);
+  var self = this;
+
+  if (self.requestFn) {
+    self.requestFn(self.value);
     return;
   }
 
-  this.abortPendingRequest();
+  self.abortPendingRequest();
 
-  if (this.value.length < this.minLength) {
-    this.results = [];
-    this.selectedIndex = -1;
+  if (self.value.length < self.minLength) {
+    self.results = [];
+    self.selectedIndex = -1;
     return;
   }
 
   var ajax = new XMLHttpRequest();
-  ajax.open('GET', this.urlBuilderFn(this.value), true);
+  ajax.open('GET', self.urlBuilderFn(self.value), true);
 
   ajax.onload = function onload() {
+    var self = this;
+
     if (ajax.status !== 200) {
       return;
     }
 
-    if (this.resultFn) {
-      this.results = this.resultFn(ajax.responseText);
+    if (self.resultFn) {
+      self.results = self.resultFn(ajax.responseText);
     } else {
-      this.results = JSON.parse(ajax.responseText) || [];
+      self.results = JSON.parse(ajax.responseText) || [];
     }
 
-    this.render();
-  }.bind(this);
+    self.render();
+  }.bind(self);
 
   ajax.send();
-  this.xhr = ajax;
+  self.xhr = ajax;
 };
 
 /** Aborts pending request if there is one. */
 AC.prototype.abortPendingRequest = function abort() {
-  if (this.xhr && this.xhr.readystate !== 4) {
-    this.xhr.abort();
+  var self = this;
+  if (self.xhr && self.xhr.readystate !== 4) {
+    self.xhr.abort();
   }
 };
 
@@ -497,35 +527,37 @@ AC.prototype.abortPendingRequest = function abort() {
  * avoided whenever possible.
  */
 AC.prototype.render = function render() {
-  this.selectedIndex = -1;
-  this.rows = [];
+  var self           = this;
+  self.selectedIndex = -1;
+  self.rows          = [];
 
-  if (this.rowWrapperEl) {
-    this.el.removeChild(this.rowWrapperEl);
+  if (self.rowWrapperEl) {
+    self.el.removeChild(self.rowWrapperEl);
   }
 
-  this.rowWrapperEl = AC.createEl('div', this.getCSS('ROW_WRAPPER'));
+  self.rowWrapperEl = AC.createEl('div', self.getCSS('ROW_WRAPPER'));
 
-  if (this.results.length) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < this.results.length; i++) {
-      var row = null;
-      if (this.rowFn) {
-        row = this.rowFn(this.results[i]);
-        row.className += ' ' + this.getCSS('ROW');
+  if (self.results.length) {
+    var fragment, i, row;
+    fragment = document.createDocumentFragment();
+    for (i = 0; i < self.results.length; i++) {
+      row = null;
+      if (self.rowFn) {
+        row = self.rowFn(self.results[i]);
+        row.className += ' ' + self.getCSS('ROW');
       } else {
-        row = this.createRow(i);
+        row = self.createRow(i);
       }
       row.setAttribute('data-rid', i);
       fragment.appendChild(row);
-      this.rows.push(row);
+      self.rows.push(row);
     }
-    this.rowWrapperEl.appendChild(fragment);
+    self.rowWrapperEl.appendChild(fragment);
   } else {
-    this.rowWrapperEl.style.display = 'none';
+    self.rowWrapperEl.style.display = 'none';
   }
 
-  this.el.appendChild(this.rowWrapperEl);
+  self.el.appendChild(self.rowWrapperEl);
 };
 
 /**
@@ -537,17 +569,18 @@ AC.prototype.render = function render() {
  * @return {Element} The created row element.
  */
 AC.prototype.createRow = function create(i) {
-  var data = this.results[i];
-  var el = AC.createEl('div', this.getCSS('ROW'));
+  var self = this;
+  var data = self.results[i];
+  var el   = AC.createEl('div', self.getCSS('ROW'));
 
-  var primary = AC.createEl('span', this.getCSS('PRIMARY_SPAN'));
-  primary.appendChild(AC.createMatchTextEls(this.value,
-      data[this.primaryTextKey]));
+  var primary = AC.createEl('span', self.getCSS('PRIMARY_SPAN'));
+  primary.appendChild(AC.createMatchTextEls(self.value,
+      data[self.primaryTextKey]));
   el.appendChild(primary);
 
-  if (data[this.secondaryTextKey]) {
+  if (data[self.secondaryTextKey]) {
     el.appendChild(AC.createEl('span',
-        this.getCSS('SECONDARY_SPAN'), data[this.secondaryTextKey]));
+        self.getCSS('SECONDARY_SPAN'), data[self.secondaryTextKey]));
   }
 
   return el;
@@ -569,8 +602,8 @@ AC.createMatchTextEls = function match(input, complete) {
     return fragment;
   }
 
-  input = input ? input.trim() : '';
-  var len = input.length;
+  input     = input ? input.trim() : '';
+  var len   = input.length;
   var index = len ? complete.toLowerCase().indexOf(input.toLowerCase()) : -1;
 
   if (index === 0) {
@@ -602,13 +635,14 @@ AC.createMatchTextEls = function match(input, complete) {
  * @return {Element} The created DOM element.
  */
 AC.createEl = function create(tag, className, content) {
-  var el = document.createElement(tag);
+  var _document = document;
+  var el        = _document.createElement(tag);
 
   if (className) {
     el.className = className;
   }
   if (content) {
-    el.appendChild(document.createTextNode(content));
+    el.appendChild(_document.createTextNode(content));
   }
 
   return el;
@@ -621,9 +655,13 @@ AC.createEl = function create(tag, className, content) {
  * @return {Object} The position of the element in {left: x, top: y}.
  */
 AC.findPosition = function position(el) {
-  var r = el.getBoundingClientRect();
-  var top = r.top + window.pageYOffset || document.documentElement.scrollTop;
-  var left = r.left + window.pageXOffset || document.documentElement.scrollLeft;
+  var _window   = window;
+  var _document = document;
+
+  var r    = el.getBoundingClientRect();
+  var top  = r.top  + _window.pageYOffset || _document.documentElement.scrollTop;
+  var left = r.left + _window.pageXOffset || _document.documentElement.scrollLeft;
+
   return {left: left, top: top};
 };
 
