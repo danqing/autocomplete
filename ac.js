@@ -5,6 +5,9 @@
 'use strict';
 
 /**
+ * From: https://github.com/danqing/autocomplete/
+ * Version: 0.5.1
+ *
  * The autocomplete widget.
  *
  * @param {Element} inputEl The input element.
