@@ -208,8 +208,9 @@ AC.CLASS = {
  * @returns {boolean} Whether the browser is mobile safari.
  */
 AC.isMobileSafari = function safari() {
-  var ua  = navigator.userAgent;
-  var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+  var ua  = navigator.userAgent
+     ,iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i)
+  ;
 
   return iOS && !!ua.match(/WebKit/i) && !ua.match(/CriOS/i);
 };
@@ -241,9 +242,10 @@ AC.prototype.getCSS = function(elementID) {
 
 /** Mounts the autocomplete. */
 AC.prototype.mount = function mount() {
-  var self      = this;
-  var _window   = window;
-  var _document = document;
+  var self      = this
+     ,_window   = window
+     ,_document = document
+  ;
 
   if (self.isMounted) {
     return;
@@ -273,15 +275,16 @@ AC.prototype.mount = function mount() {
   if (Math.max(_document.documentElement.clientWidth,
       _window.innerWidth || 0) < 500) {
     setTimeout(function top() {
-      this.inputEl.scrollIntoView();
-    }.bind(self), 1);
+      self.inputEl.scrollIntoView();
+    }, 1);
   }
 };
 
 /** Unmounts the autocomplete. */
 AC.prototype.unmount = function unmount() {
-  var self    = this;
-  var _window = window;
+  var self    = this
+     ,_window = window
+  ;
 
   if (!self.isMounted) {
     return;
@@ -303,9 +306,10 @@ AC.prototype.unmount = function unmount() {
 
 /** Positions the autocomplete to be right beneath the input. */
 AC.prototype.position = function position() {
-  var self   = this;
-  var rect   = self.anchorEl.getBoundingClientRect();
-  var offset = AC.findPosition(self.anchorEl);
+  var self   = this
+     ,rect   = self.anchorEl.getBoundingClientRect()
+     ,offset = AC.findPosition(self.anchorEl)
+  ;
 
   self.el.style.top   = offset.top  + rect.height + 'px';
   self.el.style.left  = offset.left + 'px';
@@ -361,6 +365,7 @@ AC.prototype.keydown = function keydown(e) {
  */
 AC.prototype.input = function input() {
   var self   = this;
+
   self.value = self.inputEl.value;
   self.isRightArrowComplete = false;
 
@@ -415,10 +420,11 @@ AC.prototype.setSelectedIndex = function select(i) {
  * @param {Event} e The triggering event.
  */
 AC.prototype.click = function click(e) {
-  var target = e.target || e.srcElement;
-  var parent = target;
-  var rowid  = -1;
-  var self   = this;
+  var target = e.target || e.srcElement
+     ,parent = target
+     ,rowid  = -1
+     ,self   = this
+  ;
 
   while (parent) {
     if (parent === self.inputEl || parent === self.el) {
@@ -494,8 +500,6 @@ AC.prototype.requestMatch = function request() {
   ajax.open('GET', self.urlBuilderFn(self.value), true);
 
   ajax.onload = function onload() {
-    var self = this;
-
     if (ajax.status !== 200) {
       return;
     }
@@ -507,7 +511,7 @@ AC.prototype.requestMatch = function request() {
     }
 
     self.render();
-  }.bind(self);
+  };
 
   ajax.send();
   self.xhr = ajax;
@@ -569,11 +573,12 @@ AC.prototype.render = function render() {
  * @return {Element} The created row element.
  */
 AC.prototype.createRow = function create(i) {
-  var self = this;
-  var data = self.results[i];
-  var el   = AC.createEl('div', self.getCSS('ROW'));
+  var self    = this
+     ,data    = self.results[i]
+     ,el      = AC.createEl('div', self.getCSS('ROW'))
+     ,primary = AC.createEl('span', self.getCSS('PRIMARY_SPAN'))
+  ;
 
-  var primary = AC.createEl('span', self.getCSS('PRIMARY_SPAN'));
   primary.appendChild(AC.createMatchTextEls(self.value,
       data[self.primaryTextKey]));
   el.appendChild(primary);
@@ -597,14 +602,16 @@ AC.prototype.createRow = function create(i) {
  *     elements.
  */
 AC.createMatchTextEls = function match(input, complete) {
-  var fragment = document.createDocumentFragment();
+  var fragment = document.createDocumentFragment()
+     ,len,index
+  ;
   if (!complete) {
     return fragment;
   }
 
-  input     = input ? input.trim() : '';
-  var len   = input.length;
-  var index = len ? complete.toLowerCase().indexOf(input.toLowerCase()) : -1;
+  input = input ? input.trim() : '';
+  len   = input.length;
+  index = len ? complete.toLowerCase().indexOf(input.toLowerCase()) : -1;
 
   if (index === 0) {
     fragment.appendChild(AC.createEl('b', null, complete.substring(0, len)));
@@ -635,8 +642,9 @@ AC.createMatchTextEls = function match(input, complete) {
  * @return {Element} The created DOM element.
  */
 AC.createEl = function create(tag, className, content) {
-  var _document = document;
-  var el        = _document.createElement(tag);
+  var _document = document
+     ,el        = _document.createElement(tag)
+  ;
 
   if (className) {
     el.className = className;
@@ -655,12 +663,14 @@ AC.createEl = function create(tag, className, content) {
  * @return {Object} The position of the element in {left: x, top: y}.
  */
 AC.findPosition = function position(el) {
-  var _window   = window;
-  var _document = document;
+  var _window = window
+     ,docElm  = document.documentElement
+     ,r,top,left
+  ;
 
-  var r    = el.getBoundingClientRect();
-  var top  = r.top  + _window.pageYOffset || _document.documentElement.scrollTop;
-  var left = r.left + _window.pageXOffset || _document.documentElement.scrollLeft;
+  r    = el.getBoundingClientRect();
+  top  = r.top  + _window.pageYOffset || docElm.scrollTop;
+  left = r.left + _window.pageXOffset || docElm.scrollLeft;
 
   return {left: left, top: top};
 };
@@ -672,8 +682,10 @@ AC.findPosition = function position(el) {
  * @return {string} The encoded query string such as a=b&c=d.
  */
 AC.encodeQuery = function encode(obj) {
-  var str = [];
-  for (var p in obj) {
+  var p,
+      str = []
+  ;
+  for (p in obj) {
     if (obj.hasOwnProperty(p)) {
       str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
     }
